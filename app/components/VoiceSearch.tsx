@@ -231,6 +231,7 @@ export default function VoiceSearch() {
       };
 
       recognition.onresult = (event: any) => {
+        logger({ result: true, event })
         let currentInterim = '';
         let finalTranscript = '';
 
