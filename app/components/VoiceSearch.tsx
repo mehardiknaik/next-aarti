@@ -221,6 +221,7 @@ export default function VoiceSearch() {
       recognition.lang = selectedLang;
 
       recognition.onstart = () => {
+        logger({ start: true })
         setIsListening(true);
         setIsPaused(false);
         isPausedRef.current = false;
@@ -258,6 +259,7 @@ export default function VoiceSearch() {
       };
 
       recognition.onerror = (event: any) => {
+        logger({ error: event.error })
         if (isPausedRef.current) {
           return;
         }
@@ -278,6 +280,7 @@ export default function VoiceSearch() {
       };
 
       recognition.onend = () => {
+        logger({ end: true })
         // Auto restart if still supposed to be listening (e.g. browser timed out speech endpoint)
         if (!isPausedRef.current && isListening) {
           try {
