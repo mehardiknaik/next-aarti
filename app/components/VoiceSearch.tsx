@@ -217,7 +217,7 @@ export default function VoiceSearch() {
       setIsSupported(true);
       const recognition = new SpeechRecognitionAPI();
       recognition.continuous = false;
-      recognition.interimResults = false;
+      recognition.interimResults = true;
       recognition.maxAlternatives = 1;
       recognition.lang = selectedLang;
 
