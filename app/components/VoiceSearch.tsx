@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import data from '../store/data';
 import Link from 'next/link';
+import logger from '../util/logger';
 
 interface AartiItem {
   key: string;
@@ -215,8 +216,8 @@ export default function VoiceSearch() {
     if (SpeechRecognitionAPI) {
       setIsSupported(true);
       const recognition = new SpeechRecognitionAPI();
-      recognition.continuous = false;
-      recognition.interimResults = false;
+      recognition.continuous = true;
+      recognition.interimResults = true;
       recognition.lang = selectedLang;
 
       recognition.onstart = () => {
@@ -232,6 +233,7 @@ export default function VoiceSearch() {
         let currentInterim = '';
         let finalTranscript = '';
 
+
         for (let i = event.resultIndex; i < event.results.length; i++) {
           const transcript = event.results[i][0].transcript;
           if (event.results[i].isFinal) {
@@ -240,6 +242,8 @@ export default function VoiceSearch() {
             currentInterim += transcript;
           }
         }
+
+        logger({ currentInterim, finalTranscript })
 
         if (finalTranscript) {
           const cleaned = finalTranscript.trim().replace(/[.,!?;:]/g, '');
@@ -542,11 +546,10 @@ export default function VoiceSearch() {
                     triggerHaptic();
                     setSelectedLang(lang.code);
                   }}
-                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition cursor-pointer ${
-                    selectedLang === lang.code
-                      ? 'bg-white dark:bg-[#2C2C2E] text-orange-600 dark:text-orange-400 shadow-sm'
-                      : 'text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white'
-                  }`}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition cursor-pointer ${selectedLang === lang.code
+                    ? 'bg-white dark:bg-[#2C2C2E] text-orange-600 dark:text-orange-400 shadow-sm'
+                    : 'text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white'
+                    }`}
                 >
                   {lang.short}
                 </button>
@@ -599,13 +602,12 @@ export default function VoiceSearch() {
               <button
                 onClick={toggleListening}
                 disabled={isSupported === false}
-                className={`relative z-10 w-24 h-24 sm:w-28 sm:h-28 rounded-full flex flex-col items-center justify-center transition-all duration-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-xl ${
-                  isListening
-                    ? 'bg-red-500 text-white scale-105 ring-4 ring-red-300 dark:ring-red-900/50'
-                    : isPaused
+                className={`relative z-10 w-24 h-24 sm:w-28 sm:h-28 rounded-full flex flex-col items-center justify-center transition-all duration-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-xl ${isListening
+                  ? 'bg-red-500 text-white scale-105 ring-4 ring-red-300 dark:ring-red-900/50'
+                  : isPaused
                     ? 'bg-amber-500 text-white scale-100 ring-4 ring-amber-300 dark:ring-amber-900/50'
                     : 'bg-gradient-to-tr from-orange-500 to-amber-400 hover:from-orange-600 hover:to-amber-500 text-white hover:scale-105 shadow-orange-500/30'
-                }`}
+                  }`}
                 title={isListening ? 'Pause listening' : isPaused ? 'Resume listening' : 'Start speaking'}
               >
                 <span className="material-symbols-rounded text-4xl">
@@ -675,13 +677,12 @@ export default function VoiceSearch() {
                           height: isPaused ? '10px' : `${height}px`,
                           transition: 'height 0.08s ease-out',
                         }}
-                        className={`w-1 sm:w-1.5 rounded-full transition-all ${
-                          isPaused
-                            ? 'bg-amber-400/40 dark:bg-amber-500/30'
-                            : isCenter
+                        className={`w-1 sm:w-1.5 rounded-full transition-all ${isPaused
+                          ? 'bg-amber-400/40 dark:bg-amber-500/30'
+                          : isCenter
                             ? 'bg-gradient-to-t from-red-500 via-orange-500 to-amber-300 shadow-sm shadow-orange-500/50'
                             : 'bg-gradient-to-t from-orange-500 to-amber-400'
-                        }`}
+                          }`}
                       />
                     );
                   })}
@@ -772,11 +773,10 @@ export default function VoiceSearch() {
                     triggerHaptic();
                     setQuery(prompt.text);
                   }}
-                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition cursor-pointer ${
-                    query === prompt.text
-                      ? 'bg-orange-500 text-white font-bold shadow-sm'
-                      : 'ios-glass-pill text-[#3A3A3C] dark:text-[#E5E5EA] hover:bg-black/5 dark:hover:bg-white/10'
-                  }`}
+                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition cursor-pointer ${query === prompt.text
+                    ? 'bg-orange-500 text-white font-bold shadow-sm'
+                    : 'ios-glass-pill text-[#3A3A3C] dark:text-[#E5E5EA] hover:bg-black/5 dark:hover:bg-white/10'
+                    }`}
                 >
                   <span className={`material-symbols-rounded text-sm ${query === prompt.text ? 'text-white' : 'text-orange-500 dark:text-orange-400'}`}>record_voice_over</span>
                   <span>{prompt.label}</span>
@@ -864,11 +864,10 @@ export default function VoiceSearch() {
                         </span>
                         <button
                           onClick={(e) => toggleFavorite(e, item.key)}
-                          className={`p-2 rounded-full transition cursor-pointer ${
-                            isFav
-                              ? 'bg-amber-500/20 text-amber-500'
-                              : 'text-[#8E8E93] hover:bg-black/5 dark:hover:bg-white/10'
-                          }`}
+                          className={`p-2 rounded-full transition cursor-pointer ${isFav
+                            ? 'bg-amber-500/20 text-amber-500'
+                            : 'text-[#8E8E93] hover:bg-black/5 dark:hover:bg-white/10'
+                            }`}
                           title={isFav ? 'Saved' : 'Save Aarti'}
                         >
                           <span className="material-symbols-rounded text-lg">
